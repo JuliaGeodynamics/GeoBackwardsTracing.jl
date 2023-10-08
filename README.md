@@ -1,4 +1,4 @@
-#GeoBackwardsTracing
+# GeoBackwardsTracing
 
 In geodynamic simulations, it is often useful to perform postprocessing steps to compute, for example, *P-T* evolution or finite strain tensors at specific points at the end of a simulation. Whereas this can be done during a simulation (by adding passive tracers), it is often better for visualisations to do this at the end of a simulation and trace points backwards in time.
 
