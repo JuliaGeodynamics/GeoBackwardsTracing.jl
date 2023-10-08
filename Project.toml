@@ -1,0 +1,4 @@
+name = "GeoBackwardsTracing"
+uuid = "02b448a1-daff-47d1-8165-ee5d59c3ac8c"
+authors = ["Boris Kaus <kaus@uni-mainz.de>"]
+version = "0.1.0"
