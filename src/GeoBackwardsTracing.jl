@@ -13,7 +13,7 @@ const TA = backend == "CUDA" ? JustPIC.CUDA.CuArray : Array
 
 
 include("init.jl")  # particle initialisation
-
+include("utils.jl")
 
 
 

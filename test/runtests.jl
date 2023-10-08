@@ -6,11 +6,23 @@ include("LaMEM_RisingSphere.jl")
 # perform a simple LaMEM simulation
 run_LaMEM(ntime=5)
 
-
+# 
 FileName = "output"
-Timesteps, Filenames, time = Read_LaMEM_simulation(FileName)
+DirName  = pwd()
+
+# Read all timesteps:
+Timesteps, Filenames, time = ReadAllTimesteps(FileName, DirName)
 
 starting_timestep = Timesteps[end]
+
+# Read the 1D coordinate vectors of the full grid
+grid = GetGrid(FileName, DirName, starting_timestep)
+
+grid_p = grid   # where are particles located (can be subset of grid)?
+
+particles, p_tag = init_particles(grid_p);  # init particles @ center of cell
+
+
 
 
 
