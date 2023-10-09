@@ -69,7 +69,6 @@ function ReadTimestep(FileName, DirName, time; fields=("velocity","j2_strain_rat
         fac = 1.0
     end 
 
-
     if Code=="LaMEM"
         # read 2 surrounding timesteps
         data0, _ = Read_LaMEM_timestep(FileName, Timesteps[id0], DirName, fields=fields)
@@ -97,6 +96,7 @@ function ReadTimestep(FileName, DirName, time; fields=("velocity","j2_strain_rat
     else
         error("other codes not yet implemented")
     end
+    
     grid    =   GetGrid(data_interp)
     
     return grid, data_interp.fields...
