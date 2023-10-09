@@ -2,7 +2,7 @@
 export advect_backwards
 
 """
-    particles, p_tag, p_Strain, p_tcrit = advect_backwards(particles::Particles, p_tag, FileName, DirName="", t_start=nothing; fac=0.1, Code="LaMEM", t_end=0.0, verbose=false, strain_max = 1)
+    particles, p_tag, p_Strain, p_tcrit = advect_backwards(particles::Particles, p_tag, FileName, DirName="", t_start=nothing; fac=0.1, Code="LaMEM", t_end=0.0, verbose=false, strain_max = 1, only_initial_velocity=false)
 
 Advect tracers backwards with the flow, starting with time `t_start` until `t_end`. Also computes the time, `p_tcrit`, at which particles reach the strain `strain_max`. 
 
@@ -17,6 +17,7 @@ Input:
 - `t_end`: time at which we stop advecting
 - `verbose`: display info if `true`
 - `strain_max`: maximum strain
+- `only_initial_velocity`: set to `true` if you only want to use the initial velocity for advection 
 
 Output:
 - `particles`: advected particles @ end
@@ -25,7 +26,13 @@ Output:
 - `p_tcrit`: time at which the particle exceeded the strain `strain_max`. This can be used during forward advection as starting point.
 
 """
-function advect_backwards(particles::Particles, p_tag, FileName, DirName="", t_start=nothing; fac=0.1, Code="LaMEM", t_end=0.0, verbose=false, strain_max = 1)
+function advect_backwards(particles::Particles, p_tag, FileName, DirName="", t_start=nothing; 
+                        fac=0.1, 
+                        Code="LaMEM", 
+                        t_end=0.0, 
+                        verbose=false, 
+                        strain_max = 1,
+                        only_initial_velocity=false)
 
     # Read all timesteps:
     Timesteps, Filenames, time = ReadAllTimesteps(FileName, DirName)
@@ -46,6 +53,9 @@ function advect_backwards(particles::Particles, p_tag, FileName, DirName="", t_s
     t       = t_start
 
     while t>t_end
+        if !only_initial_velocity
+            grid, V, J2   = ReadTimestep(FileName, DirName, t, fields=fields; Code=Code)
+        end
 
         # Velocity is given @ vertexes in cm/year in LaMEM
         dx,dy,dz    =   minimum.(diff.(grid))   # in km
