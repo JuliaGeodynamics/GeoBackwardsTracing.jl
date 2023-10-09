@@ -1,5 +1,5 @@
 
-export ReadAllTimesteps, GetGrid
+export ReadAllTimesteps, GetGrid, ReadVelocity
 
 """
     Timesteps, Filenames, time = ReadAllTimesteps(FileName="output", DirName=pwd(); Code="LaMEM")
@@ -25,10 +25,66 @@ function GetGrid(FileName, DirName, starting_timestep; Code="LaMEM")
 
     if Code=="LaMEM"
         data, t =   Read_LaMEM_timestep(FileName, starting_timestep, DirName)
-        grid    =   data.x.val[:,1,1], data.y.val[1,:,1], data.z.val[1,1,:]
+        grid    =   GetGrid(data)
     else
         error("other methods not yet implemented")
     end
 
     return grid
+end
+
+function GetGrid(data::CartData)
+
+    grid    =   data.x.val[:,1,1], data.y.val[1,:,1], data.z.val[1,1,:]
+
+    return grid
+end
+
+
+
+"""
+
+    ReadVelocity(FileName, DirName, time, fields=("velocity","j2_strain_rate"); Code="LaMEM")
+
+Interpolate the data at time `time` from a series of timesteps (read from disk)
+"""
+function ReadVelocity(FileName, DirName, time; fields=("velocity","j2_strain_rate"), Code="LaMEM")
+    
+    Timesteps, Filenames, time_vec = ReadAllTimesteps(FileName, DirName; Code=Code)
+
+    if time<minimum(time_vec)
+        error("time less than minimum time")
+    elseif time>maximum(time_vec)
+        error("time more than maximum time")
+    end
+
+    # interpolate the timesteps
+    id0 = findlast( (time_vec .- time).<= 0)
+    id1 = findfirst((time_vec .- time).>= 0)
+    
+    dt  = time_vec[id1] - time_vec[id0]
+    if dt>0
+        fac = (time-time_vec[id0])/dt
+    else
+        fac = 1.0
+    end 
+
+    if Code=="LaMEM"
+        # read 2 surrounding timesteps
+        data0, _ = Read_LaMEM_timestep(FileName, Timesteps[id0], DirName, fields=fields)
+        data1, _ = Read_LaMEM_timestep(FileName, Timesteps[id1], DirName, fields=fields)
+
+        # interpolate & create a new field
+        data_interp = CartData(data0.x.val, data0.y.val, data0.z.val, (z=data0.z.val,))
+        names = keys(data0.fields)
+        for i=1:length(data0.fields)
+            d0 = data0.fields[i]
+            d1 = data1.fields[i]
+            data_interp = AddField(data_interp,String(names[i]),fac.*d0 .+ (1.0-fac).*d1) 
+        end
+    else
+        error("other codes not yet implemented")
+    end
+    
+    return data_interp
 end

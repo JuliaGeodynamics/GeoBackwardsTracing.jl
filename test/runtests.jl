@@ -13,16 +13,17 @@ DirName  = pwd()
 # Read all timesteps:
 Timesteps, Filenames, time = ReadAllTimesteps(FileName, DirName)
 
-starting_timestep = Timesteps[end]
+t_start = time[end]
 
 # Read the 1D coordinate vectors of the full grid
-grid = GetGrid(FileName, DirName, starting_timestep)
+grid = GetGrid(FileName, DirName, Timesteps[end])
 
 grid_p = grid   # where are particles located (can be subset of grid)?
 
 particles, p_tag = init_particles(grid_p);  # init particles @ center of cell
 
 
+particles, p_tag, p_Strain = advect_backwards(particles, p_tag, FileName, DirName, t_start; fac=0.1, Code="LaMEM", t_end=0.0)
 
 
 

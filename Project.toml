@@ -9,5 +9,10 @@ GeophysicalModelGenerator = "3700c31b-fa53-48a6-808a-ef22d5a84742"
 JustPIC = "10dc771f-8528-4cd9-9d3b-b21b2e693339"
 LaMEM = "2e889f3d-35ce-4a77-8ea2-858aecb630f7"
 ParallelStencil = "94395366-693c-11ea-3b26-d9b7aac5d958"
+ReadVTK = "dc215faf-f008-4882-a9f7-a79a826fadc3"
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[compat]
+LaMEM = "0.2.4"
+julia = "1.9"
